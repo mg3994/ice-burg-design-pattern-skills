@@ -1,6 +1,6 @@
 ---
 name: iceberg-pattern-architecture
-description: Design real-time Flutter apps with the Iceberg Pattern, pairing submerged repository engines with screen-scoped facades, dual-track mutations, and pure Dart 3 records for 0ms optimistic UI. Use when architecting real-time Flutter/Dart applications or refactoring stream-heavy Clean Architecture codebases.
+description: Design real-time Flutter apps with the Iceberg Pattern, pairing submerged repository engines with screen-scoped facades, dual-track mutations, and pure Dart 3 records for 0ms optimistic UI. Use when architecting real-time Flutter/Dart applications, refactoring stream-heavy Clean Architecture codebases, or eliminating StreamBuilder anti-patterns.
 license: MIT
 metadata:
   author: RandalSchwartz
@@ -27,7 +27,7 @@ The Iceberg Pattern is an architectural framework for real-time Flutter and Dart
                     │    TaskRepository      │  streamSignal + signals
                     └───────────┬────────────┘
                                 │
-                    ┌───────────▼────────────┘
+                    ┌───────────▼────────────┐
                     │   REAL-TIME CLOUD      │  Firestore / WebSocket / SSE
                     └────────────────────────┘
 ```
@@ -52,6 +52,15 @@ Progress:
 - [ ] Step 3: Implement Dual-Track Mutations (`toggleTask` with optimistic `batch()` rollback, `deleteTask` with pessimistic await).
 - [ ] Step 4: Create Screen Facade (`CubitSignal`) connecting Repository signals to UI-filtered state.
 - [ ] Step 5: Connect Flutter UI using `BlocBuilder` (zero `StreamBuilder` or `FutureBuilder` widgets in UI).
+- [ ] Step 6: Validate architecture by executing `scripts/validate_iceberg_architecture.py lib/`.
+
+---
+
+## Architectural Decision Tree
+
+- **Is the operation high-frequency & non-destructive?** -> Use **Optimistic Track** (0ms patch + background sync + atomic `batch()` rollback).
+- **Is the operation destructive or irreversible?** -> Use **Pessimistic Track** (await cloud future + row-level spinner in screen state).
+- **Does the UI need data from an async stream?** -> Quarantining via `streamSignal` in Repository. **Never** use `StreamBuilder` in Flutter widgets.
 
 ---
 
@@ -62,6 +71,16 @@ Progress:
 - **In-Flight Mutation Guards**: Maintain a `Set<String>` of in-flight operation IDs inside the repository engine to prevent rapid re-entrant user taps from triggering race conditions.
 - **Pure Dart Portability**: Ensure Domain and Data layers have zero imports from `package:flutter/widgets.dart` or `package:flutter/material.dart`. Keep core logic pure Dart for native execution speed and CLI testability.
 
-For detailed architecture diagrams and engine implementation code templates, see:
+## Automated Architectural Validator
+
+This skill bundles an executable analysis script to verify codebase adherence:
+
+```bash
+python3 scripts/validate_iceberg_architecture.py <path-to-lib>
+```
+
+For detailed architecture diagrams, comparisons, and engine implementation code templates, see:
+- [Clean Architecture vs. Iceberg Pattern Comparison](references/clean-vs-iceberg.md)
+- [Stale-While-Revalidate Caching Reference](references/stale-while-revalidate.md)
 - [Domain & Submerged Engine Reference](references/domain-and-engine.md)
 - [Facade & Flutter UI Reference](references/facade-and-ui.md)

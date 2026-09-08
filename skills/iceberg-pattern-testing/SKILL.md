@@ -37,5 +37,9 @@ Because the Domain Model, Repository Engine, and Cubit Facade in the Iceberg Pat
 - [ ] Test 1: **Cloud Stream Sync** — Push stream event to `cloudController.add(...)` and expect updated state array.
 - [ ] Test 2: **0ms Optimistic Update** — Pass a hanging `Completer` to cloud update function, call `toggleTask`, and assert optimistic state emission in Frame 1.
 - [ ] Test 3: **Rollback & Sync Error** — Pass throwing function to cloud update, call `toggleTask`, and expect Frame 1 (optimistic) -> Frame 2 (rollback + error flag) -> `errors` matcher.
+- [ ] Copy reusable test harness template from `assets/test_suite_template.dart`.
 
-For full executable test suites and state matchers, see [Testing Reference Guide](references/testing-guide.md).
+For complete test recipes and executable code examples, see:
+- [Testing Recipes Guide](references/testing-recipes.md)
+- [Declarative Testing Reference Guide](references/testing-guide.md)
+- [Test Suite Asset Template](assets/test_suite_template.dart)

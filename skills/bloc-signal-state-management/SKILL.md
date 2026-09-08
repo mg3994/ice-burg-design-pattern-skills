@@ -27,8 +27,10 @@ metadata:
 │                             ▼                               │
 │                   ┌───────────────────┐                     │
 │                   │ CubitSignal state │                     │
-│                   └───────────────────┘                     │
-└─────────────────────────────────────────────────────────────┘
+│                   └─────────┬─────────┘                     │
+└─────────────────────────────┼───────────────────────────────┘
+                              ▼
+                     [ BlocBuilder UI ]
 ```
 
 ## Essential Primitives
@@ -99,5 +101,9 @@ class TaskBoardCubit extends CubitSignal<TaskBoardState> {
 - [ ] Use `batch()` for all multi-signal updates and rollback handlers.
 - [ ] Pass custom `equals` comparator function to `CubitSignal` to prevent unnecessary re-renders.
 - [ ] Always call `.dispose()` on created signals/effects when closing the Cubit or Repository.
+- [ ] Run `python3 scripts/analyze_signal_leakage.py lib/` to audit CubitSignal disposal logic.
 
-For exact code templates and equality check strategies, see [State Management Reference Guide](references/signals-guide.md).
+For detailed graph optimization tactics, lifecycle diagrams, and code snippets, see:
+- [Graph Optimization Strategies](references/graph-optimization.md)
+- [CubitSignal Lifecycle & Effect Management](references/cubit-signal-lifecycle.md)
+- [State Management Reference Guide](references/signals-guide.md)
