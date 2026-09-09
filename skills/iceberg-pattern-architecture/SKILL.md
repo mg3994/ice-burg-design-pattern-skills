@@ -45,18 +45,22 @@ The Iceberg Pattern is an architectural framework for real-time Flutter and Dart
 
 ## Technical Deep-Dive & Layer Responsibilities
 
-### 1. Submerged Repository Engine (`TaskRepository`)
-- Wraps cloud stream in `streamSignal()`.
+### Tier 1: External Datastore Layer
+- Cloud infrastructure (Firebase, Supabase, WebSockets, gRPC, SSE).
+- Produces real-time event streams and remote mutation endpoints.
+
+### Tier 2: Submerged Repository Engine (`TaskRepository`)
+- Submerges cloud streams into pure Dart using `streamSignal()`.
 - Stores optimistic overrides in a private `signal<Map<String, bool>>`.
 - Exposes derived state via a memoized `computed()` signal.
-- Enforces in-flight mutation guards (`Set<String>`) to prevent re-entrant double-tap race conditions (see `references/in-flight-mutation-guards.md`).
+- Enforces in-flight mutation guards (`Set<String>`) to prevent re-entrant double-tap race conditions.
 
-### 2. Screen Facade (`TaskBoardCubit`)
+### Tier 3: Screen Facade (`TaskBoardCubit`)
 - Listens synchronously to repository signals.
 - Computes screen-scoped view models (e.g., active category filters).
 - Routes async background exceptions directly to `onError(error, st)`.
 
-### 3. Synchronous Presentation Layer (`TaskBoardScreen`)
+### Tier 4: Synchronous Presentation Layer (`TaskBoardScreen`)
 - Renders UI purely using `BlocBuilder` or `SignalBuilder`.
 - Eliminates `StreamBuilder` and `FutureBuilder` anti-patterns.
 - Projects UI state synchronously in Frame 0.
@@ -75,21 +79,6 @@ Progress:
 
 ---
 
-## Architectural Decision Tree
-
-- **Is the operation high-frequency & non-destructive?** -> Use **Optimistic Track** (0ms patch + background sync + atomic `batch()` rollback).
-- **Is the operation destructive or irreversible?** -> Use **Pessimistic Track** (await cloud future + row-level spinner in screen state).
-- **Does the UI need data from an async stream?** -> Quarantining via `streamSignal` in Repository. **Never** use `StreamBuilder` in Flutter widgets.
-
----
-
-## Gotchas & Critical Rules
-
-- **Never leak streams into UI**: Avoid `StreamBuilder`, `FutureBuilder`, or stream subscriptions inside Flutter widgets. All reactive data must be exposed via `ReadonlySignal` or `CubitSignal`.
-- **Atomic Rollbacks with `batch()`**: Always wrap optimistic patch updates and error status changes inside `batch()` blocks to prevent intermediate torn frames.
-- **In-Flight Mutation Guards**: Maintain a `Set<String>` of in-flight operation IDs inside the repository engine to prevent rapid re-entrant user taps from triggering race conditions.
-- **Pure Dart Portability**: Ensure Domain and Data layers have zero imports from `package:flutter/widgets.dart` or `package:flutter/material.dart`. Keep core logic pure Dart for native execution speed and CLI testability.
-
 ## Automated Architectural Validator
 
 This skill bundles an executable analysis script to verify codebase adherence:
@@ -99,6 +88,8 @@ python3 scripts/validate_iceberg_architecture.py <path-to-lib>
 ```
 
 For detailed architecture diagrams, comparisons, and engine implementation code templates, see:
+- [4-Tier Architecture Taxonomy Reference](references/architecture-layers.md)
+- [Dual-Track Mutation Protocol Reference](references/dual-track-mutations.md)
 - [In-Flight Mutation Guards Reference](references/in-flight-mutation-guards.md)
 - [Clean Architecture vs. Iceberg Pattern Comparison](references/clean-vs-iceberg.md)
 - [Stale-While-Revalidate Caching Reference](references/stale-while-revalidate.md)
