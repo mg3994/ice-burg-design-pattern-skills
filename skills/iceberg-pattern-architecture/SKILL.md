@@ -3,7 +3,6 @@ name: iceberg-pattern-architecture
 description: Design real-time Flutter apps with the Iceberg Pattern, pairing submerged repository engines with screen-scoped facades, dual-track mutations, and pure Dart 3 records for 0ms optimistic UI. Use when architecting real-time Flutter/Dart applications, refactoring stream-heavy Clean Architecture codebases, or eliminating StreamBuilder anti-patterns.
 license: MIT
 metadata:
-  author: RandalSchwartz
   category: architecture
 ---
 
@@ -36,11 +35,31 @@ The Iceberg Pattern is an architectural framework for real-time Flutter and Dart
 
 1. **Collapse Asynchrony at the Waterline**: Asynchronous streams (Firestore snapshots, WebSockets, gRPC streams) are submerged inside the Repository Engine. Above the waterline (Cubits and UI), all data flow is 100% synchronous projection (`UI = f(State)`).
 2. **Dual-Track Mutations**:
-   - **Optimistic Track (0ms latency)**: Used for high-frequency, non-destructive user actions (e.g. toggling checkboxes). State updates instantly across all screens in 0ms; syncs in background; silently rolls back on failure.
-   - **Pessimistic Track**: Used for destructive or irreversible actions (e.g. resource deletion). Awaits cloud confirmation while providing row-level/action-level loading indicators.
+   - **Optimistic Track (0ms latency)**: Used for high-frequency, non-destructive user actions (e.g. toggling checkboxes). State updates instantly across all screens in 0ms; syncs in background; silently rolls back on failure using atomic `batch()`.
+   - **Pessimistic Track**: Used for destructive or irreversible actions (e.g. resource deletion). Awaits cloud confirmation while providing row-level/action-level loading indicators in the screen state.
 3. **Screen-Scoped Facades**: Use `CubitSignal` as a lightweight screen facade to transform domain signals into view-specific models, handle ephemeral UI filters, and translate repository exceptions into standard BLoC error streams (`onError`).
 4. **Stale-While-Revalidate UX**: On network disconnects or cloud write rejections, keep cached state visible with a non-intrusive warning banner instead of tearing down the UI or replacing screens with error widgets.
 5. **Pure Dart 3 Data Layer**: Domain entities are represented using pure Dart 3 records (`typedef Task = ({String id, String title, bool isCompleted, List<String> tags});`), removing boilerplate like `copyWith`, `props`, or code generation.
+
+---
+
+## Technical Deep-Dive & Layer Responsibilities
+
+### 1. Submerged Repository Engine (`TaskRepository`)
+- Wraps cloud stream in `streamSignal()`.
+- Stores optimistic overrides in a private `signal<Map<String, bool>>`.
+- Exposes derived state via a memoized `computed()` signal.
+- Enforces in-flight mutation guards (`Set<String>`) to prevent re-entrant double-tap race conditions.
+
+### 2. Screen Facade (`TaskBoardCubit`)
+- Listens synchronously to repository signals.
+- Computes screen-scoped view models (e.g., active category filters).
+- Routes async background exceptions directly to `onError(error, st)`.
+
+### 3. Synchronous Presentation Layer (`TaskBoardScreen`)
+- Renders UI purely using `BlocBuilder` or `SignalBuilder`.
+- Eliminates `StreamBuilder` and `FutureBuilder` anti-patterns.
+- Projects UI state synchronously in Frame 0.
 
 ---
 

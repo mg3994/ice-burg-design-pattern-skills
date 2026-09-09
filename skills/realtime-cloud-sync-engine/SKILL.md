@@ -3,7 +3,6 @@ name: realtime-cloud-sync-engine
 description: Design resilient real-time cloud synchronization engines handling Firestore, WebSockets, SSE, and Supabase streams with 0ms optimistic updates, offline queuing, Last-Write-Wins conflict resolution, and exponential backoff. Use when building real-time sync engines or cloud data layers in Flutter/Dart.
 license: MIT
 metadata:
-  author: RandalSchwartz
   category: cloud-sync
 ---
 

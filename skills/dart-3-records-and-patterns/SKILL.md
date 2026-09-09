@@ -3,7 +3,6 @@ name: dart-3-records-and-patterns
 description: Leverage pure Dart 3 Records, exhaustive Pattern Matching, Guard clauses, Sealed Class hierarchies, and Class Modifiers for boilerplate-free domain models. Use when designing Dart 3 domain models or refactoring legacy Equatable/Freezed classes.
 license: MIT
 metadata:
-  author: RandalSchwartz
   category: dart3
 ---
 

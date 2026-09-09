@@ -3,7 +3,6 @@ name: agent-skill-creator
 description: Meta-skill for authoring, structuring, and validating production-ready Agent Skills according to agentskills.io specifications. Features progressive disclosure patterns, frontmatter schema rules, gotchas, and validation scripts. Use when creating new agent skills or auditing existing skill packages.
 license: MIT
 metadata:
-  author: RandalSchwartz
   category: meta-skills
 ---
 

@@ -3,7 +3,6 @@ name: iceberg-pattern-testing
 description: Write fast, declarative unit and integration tests for Iceberg Pattern Flutter applications using bloc_signals_test. Features pure Dart testing, 0ms optimistic verification, and silent rollback assertion without Flutter widget spinners or mock platform channels.
 license: MIT
 metadata:
-  author: RandalSchwartz
   category: testing
 ---
 

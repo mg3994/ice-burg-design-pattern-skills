@@ -10,6 +10,18 @@
 | **Error Handling** | Full-screen error widgets or destructive state replace | Stale-while-revalidate cached state with non-intrusive warning banners |
 | **Testing Overhead** | Complex async mocks, `pumpAndSettle`, widget testers | Pure Dart declarative tests with `blocSignalTest` running in milliseconds |
 
+## Microtask Queue & Latency Breakdown
+
+```
+CLEAN ARCHITECTURE LATENCY PIPELINE:
+User Tap ──> Cubit/UseCase ──> Async Future ──> Network RTT (200ms) ──> Stream Event ──> UI Rebuild
+Total User Perceived Latency: ~200ms - 1500ms 🐢
+
+ICEBERG PATTERN LATENCY PIPELINE:
+User Tap ──> Optimistic Patch Signal ──> Synchronous Computed Re-render (Frame 0)
+Total User Perceived Latency: 0ms ⚡ (Background sync happens asynchronously)
+```
+
 ## Architectural Trade-offs
 
 Use Clean Architecture when:

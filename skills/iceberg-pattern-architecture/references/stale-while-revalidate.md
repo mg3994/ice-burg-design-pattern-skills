@@ -2,6 +2,32 @@
 
 The Iceberg Pattern implements stale-while-revalidate UX to ensure users never experience blank screens or disruptive full-page error widgets during cloud stream connection loss or mutation failures.
 
+```
+                    ┌────────────────────────┐
+                    │  USER MUTATION ACTION  │
+                    └───────────┬────────────┘
+                                │
+                     [ Optimistic 0ms Patch ]
+                                │
+                    ┌───────────▼────────────┐
+                    │    BACKGROUND SYNC     │
+                    └───────────┬────────────┘
+                                │
+               ┌────────────────┴────────────────┐
+               ▼                                 ▼
+      [ Cloud Confirmation ]           [ Cloud Failure / Timeout ]
+               │                                 │
+     Reconcile Override               Atomic batch():
+     Clear Optimistic Patch           1. Remove Optimistic Patch
+     Keep Sync Error False            2. Set hasSyncError = true
+                                      3. Route Error to onError
+                                                 │
+                                     ┌───────────▼────────────┐
+                                     │  REVERTED CACHED STATE │
+                                     │  + Warning Top Banner  │
+                                     └────────────────────────┘
+```
+
 ## 1. Dual-State Architecture
 
 The Submerged Engine maintains two reactive signals for synchronization:

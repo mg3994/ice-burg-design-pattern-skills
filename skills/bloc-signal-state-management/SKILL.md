@@ -3,7 +3,6 @@ name: bloc-signal-state-management
 description: Implement reactive state management in Flutter and Dart using bloc_signals and signals_core. Features CubitSignal, streamSignal, computed, signal, and batch() for zero-lag fine-grained reactive state graphs. Use when implementing state management with BlocSignal or signals in Dart/Flutter.
 license: MIT
 metadata:
-  author: RandalSchwartz
   category: state-management
 ---
 

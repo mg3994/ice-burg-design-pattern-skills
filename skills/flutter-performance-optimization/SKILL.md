@@ -3,7 +3,6 @@ name: flutter-performance-optimization
 description: Optimize Flutter app performance, target 60/120 FPS frame budgets, eliminate redundant widget rebuilds with fine-grained signals, audit memory leaks, and isolate paint layers. Use when profiling or optimizing performance in Flutter applications.
 license: MIT
 metadata:
-  author: RandalSchwartz
   category: performance
 ---
 
