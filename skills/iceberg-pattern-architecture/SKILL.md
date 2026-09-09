@@ -49,7 +49,7 @@ The Iceberg Pattern is an architectural framework for real-time Flutter and Dart
 - Wraps cloud stream in `streamSignal()`.
 - Stores optimistic overrides in a private `signal<Map<String, bool>>`.
 - Exposes derived state via a memoized `computed()` signal.
-- Enforces in-flight mutation guards (`Set<String>`) to prevent re-entrant double-tap race conditions.
+- Enforces in-flight mutation guards (`Set<String>`) to prevent re-entrant double-tap race conditions (see `references/in-flight-mutation-guards.md`).
 
 ### 2. Screen Facade (`TaskBoardCubit`)
 - Listens synchronously to repository signals.
@@ -99,6 +99,7 @@ python3 scripts/validate_iceberg_architecture.py <path-to-lib>
 ```
 
 For detailed architecture diagrams, comparisons, and engine implementation code templates, see:
+- [In-Flight Mutation Guards Reference](references/in-flight-mutation-guards.md)
 - [Clean Architecture vs. Iceberg Pattern Comparison](references/clean-vs-iceberg.md)
 - [Stale-While-Revalidate Caching Reference](references/stale-while-revalidate.md)
 - [Domain & Submerged Engine Reference](references/domain-and-engine.md)
